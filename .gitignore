@@ -1,0 +1,37 @@
+# macOS固有ファイル
+.DS_Store
+
+# Xcode固有ファイル
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# ビルド成果物
+build/
+DerivedData/
+*.ipa
+*.app
+*.dSYM
+
+# Swiftパッケージ関係
+.swiftpm/
+.build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/
+
+# SwiftPM artifacts
+/.package.resolved
+
+# その他無視しても良いもの
+*.swp
+*.lock
+*.orig

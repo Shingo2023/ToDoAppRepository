@@ -8,17 +8,7 @@
 //import UIKit すると、Foundation に含まれるクラスも自動で使えるようになります
 import UIKit
 
-// 構造体TodoItemを作成
-// Codable コーダブル 　　変換（エンコードencode）と復元（デコードdecode）できる
-struct TodoItem: Codable {
-    var title: String
-    var completed: Bool
-}
 
-// 構造体TodoListに変換と復元機能。先ほど定義した構造体TodoItemを格納。
-struct TodoList: Codable {
-    var items: [TodoItem]
-}
 //中核のクラス。
 class TodoListController {
     
@@ -70,7 +60,7 @@ class TodoListController {
     // todoを達成flagを反転する
     //トグルコンプリーテッド　過去を切り替える
     func toggleCompleted(at index: Int) {
-        //todolistのアイテムの呼び出し[インデックスで要素を指定].コンプリーテッド（完了状態のBool型を判定）.トグル（true・falseを切り替える）
+        //todolistのアイテムの呼び出し[インデックスで要素を指定].コンプリーテッド（完了状態のBool型を判定）.トグル（true・falseを切り替え　る）
         todoList.items[index].completed.toggle()
         save()
     }
@@ -92,8 +82,6 @@ class TodoListController {
 
 //
 class TodoListViewController: UIViewController {
-
-    @IBOutlet weak var textField: UITextField!
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -112,15 +100,15 @@ class TodoListViewController: UIViewController {
         // guard let  オプショナル値が nil でないことを確認し、その後にアンラップされた値を使用できるようにします。
         // 条件式　guard let = nil else {nil処理（return）}　non-nil処理
         // 定数タイトルは　テキストフィールドのテキスト　タイトルがない時に　リターンして中断する
-        guard let title = textField.text, !title.isEmpty else { return }
+        //guard let title = textField.text, !title.isEmpty else { return }
         
         // 下記はguard letにより、テキストとタイトルが存在する場合の処理
         // 定数化した中核のクラスのアイテムを追加（引数タイトル）
-        todoListController.addItem(title: title)
+        
         // 当クラスのIBoutletしたtableView（UItableViewクラスの）のリロードデータメソッドを呼びだす（画面が開かれるたびに最新の状態に読み込みする）
         tableView.reloadData()
         // テキストフィールドのテキストは空を初期値とする
-        textField.text = ""
+        //textField.text = ""
         
     }
     
@@ -136,11 +124,9 @@ class TodoListViewController: UIViewController {
         // as! AddTaskViewController: (戻り値である)UIViewController型から遷移先のAddTaskViewController型(storyboardのカスタムクラス欄と同じものを記載。)に強制キャスト
         let addTaskViewController = storyboard.instantiateViewController(withIdentifier: "AddTaskViewController") as! AddTaskViewController
         // self 自分が今いるところ（AddTaskViewController や HomeViewController）
-        // navigationController：現在の画面がナビゲーションコントローラに包まれているからインスタンス化してあげる
-        // navigationController storyboard　が　navigationControllerを使用しているため　navigationControllerプロパティ経由でアクセスする必要がある。
         // navigationController 経由で present を呼ぶことで、ナビゲーション全体の上から表示する形になる
         // present(遷移先のstoryboardID, animated: true)　指定した画面をモーダルで表示する
-        self.navigationController?.present(addTaskViewController, animated: true)
+        self.present(addTaskViewController, animated: true)
         print("ボタンを押しました")
     }
     

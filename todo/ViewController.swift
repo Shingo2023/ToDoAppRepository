@@ -8,109 +8,72 @@
 //import UIKit すると、Foundation に含まれるクラスも自動で使えるようになります
 import UIKit
 
+class TodoListViewController: UIViewController {
+    
+    //カテゴリーをカウントするIBOutlet
+    @IBOutlet weak var redCategoryTaskCountLabel: UILabel!
+    @IBOutlet weak var greenCategoryTaskCountLabel: UILabel!
+    @IBOutlet weak var blueCategoryTaskCountLabel: UILabel!
+    @IBOutlet weak var orangeCategoryTaskCountLabel: UILabel!
+    
+    //テーブルビューのIBOutlet
+    @IBOutlet weak var tableView: UITableView!
+    
+    
+    var todoList: TodoList = TodoList(items: [])
+    
+    
+    
+    override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTaskAdded), name: Notification.Name("TaskAdded"), object: nil)
 
-//中核のクラス。
-class TodoListController {
-    
-    //構造体(TodoItem)を格納した構造体（TodoList）をコントローラクラスに定義
-    var todoList: TodoList
-    
-    // init() イニット　初期化メソッド（イニシャライザ）
-    init() {
-        // 定数デフォルツ = ユーザーデフォルツスタンダード　ユーザーの設定やちょっとしたデータを保存・読み込みできます。
-        let defaults = UserDefaults.standard
-        // if let nilか確認し、処理を分ける { nilではなく値がある場合 } else { nilの場合 }
-        // ユーザーデフォルツにセーブするデータの処理を決めようとしている（forkeyは保存・取得する際のキーワード）
-        // デフォルツデータは公式ドキュメンによりDataオプショナル型である
-        // if letによりアンラップされている（nilを取り除かれている）
-        // let saveList... if let の第二条件。elseの手前と後を決めてから第二条件を定義したかなと。
-        if let saveData = defaults.data(forKey: "TodoList"), let savedList = try?
-            // saveData を JSON としてデコード（復元）しようとしています。もし成功していたらその結果をsaveLisetに代入
-            // try?により失敗してもエラーを投げずnilを返す
-            // saveListもオプショナルですがif letによりアンラップされます
-            JSONDecoder().decode(TodoList.self, from: saveData) {
-            
-            todoList = savedList
-        } else {
-            // ユーザーデフォルツからデータを読み込んでデコードするのに失敗した場合は、空のTodoリストで初期化する
-            todoList = TodoList(items: [])
-        }
+        super.viewDidLoad()
+        loadSavedData()
     }
-    //構造体TODoItemを小文字で定義
+    
     var todoItems: [TodoItem] {
-        //todoListアイテムを再代入(空の配列)
         return todoList.items
     }
-    // todoを追加する
-    func addItem(title : String) {
+    
+    func addItem(title: String) {
         let newItem = TodoItem(title: title, completed: false)
         todoList.items.append(newItem)
-        //セーブメソッドを呼び出して保存する
         save()
     }
     
-    // todoを削除する
-    // at　引数ラベル。前置詞のatは名詞と他の単語を柔軟に繋げて「位置」「時」「方法」補助する役目がある
     func removeItem(at index: Int) {
-        //Array型のremoveメソッドで削除処理を実装
         todoList.items.remove(at: index)
         save()
     }
     
-    // todoを達成flagを反転する
-    //トグルコンプリーテッド　過去を切り替える
-    func toggleCompleted(at index: Int) {
-        //todolistのアイテムの呼び出し[インデックスで要素を指定].コンプリーテッド（完了状態のBool型を判定）.トグル（true・falseを切り替え　る）
-        todoList.items[index].completed.toggle()
-        save()
+    @objc func handleTaskAdded() {
+        loadSavedData()
+        tableView.reloadData()
     }
     
-    // todoリストがアプリを消してもデータを保持する
     func save() {
-        // お馴染みのデータ保存機能
         let defaults = UserDefaults.standard
-        // 保存処理　todoList（swiftデータ）  --エンコード-->  JSON(Data型)  --保存-->  UserDefaults（Foundation:　ファンデーションモジュールのクラス）
-        // UserDefaultsに保存するデータはデータ型である必要がある。なので、JSONを使う。
-        // 読み込み処理　UserDefaults --読み出し--> JSON(Data型)  --デコード--> todoList
-        //　if let 保存リストを定義 = 安全なアンラップ　JSON形式に変換.エンコードは(TodoListを指定)
-        if let encodelist = try? JSONEncoder().encode(todoList) {
-            //セットバリューメソッド（保存する値）（定数encodelist　ユーザーデフォルツのキー）
-            defaults.setValue(encodelist, forKey: "TodoList")
+        if let encodedList = try? JSONEncoder().encode(todoList) {
+            defaults.setValue(encodedList, forKey: "TodoList")
         }
     }
-}
-
-//
-class TodoListViewController: UIViewController {
-    
-    @IBOutlet weak var tableView: UITableView!
-    
-    //上で決めたクラスを持ってきてる
-    var todoListController = TodoListController()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+    func loadSavedData() {
+        let defaults = UserDefaults.standard
+        if let savedData = defaults.data(forKey: "TodoList"),
+           let savedList = try? JSONDecoder().decode(TodoList.self, from: savedData) {
+            todoList = savedList
+        } else {
+            todoList = TodoList(items: [])
+        }
     }
-
+    
     // +ボタンの選択時の処理
     // sender センダー　「送ってきた人」→ この関数を発動させたUI部品（ボタンなど）
     // Any エニー　「どんな型でもよい」ことを意味するSwiftの型名。例：ボタンでもスイッチでもOK
     @IBAction func addTodoItem(_ sender: Any) {
-        // guard let  オプショナル値が nil でないことを確認し、その後にアンラップされた値を使用できるようにします。
-        // 条件式　guard let = nil else {nil処理（return）}　non-nil処理
-        // 定数タイトルは　テキストフィールドのテキスト　タイトルがない時に　リターンして中断する
-        //guard let title = textField.text, !title.isEmpty else { return }
-        
-        // 下記はguard letにより、テキストとタイトルが存在する場合の処理
-        // 定数化した中核のクラスのアイテムを追加（引数タイトル）
-        
-        // 当クラスのIBoutletしたtableView（UItableViewクラスの）のリロードデータメソッドを呼びだす（画面が開かれるたびに最新の状態に読み込みする）
-        tableView.reloadData()
-        // テキストフィールドのテキストは空を初期値とする
-        //textField.text = ""
-        
-    }
+            addItem(title: "テストToDo")
+            tableView.reloadData()
+        }
     
     // タスク追加画面を見せる意図の関数
     @IBAction func showAddTask(_ sender: UIButton) {
@@ -127,13 +90,13 @@ class TodoListViewController: UIViewController {
         // navigationController 経由で present を呼ぶことで、ナビゲーション全体の上から表示する形になる
         // present(遷移先のstoryboardID, animated: true)　指定した画面をモーダルで表示する
         self.present(addTaskViewController, animated: true)
-        print("ボタンを押しました")
+        print("新規タスク追加ボタンを押しました")
     }
-    
-    
-    
-    
-    
+    // deinit は「この画面（ViewController）がメモリから消えるとき」に自動で呼ばれる特別なメソッドです。
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("TaskAdded"), object: nil)
+    }
+
 }
 // 拡張トゥドゥリストビューコントローラー　ユーアイテーブルビューデータソース
 // TodoListViewController クラスを UITableViewDataSource プロトコル（UIKitに属する）に準拠させるための宣言
@@ -148,15 +111,15 @@ extension TodoListViewController: UITableViewDataSource {
         // todoItems: ToDoのアイテムが入っている配列（[TodoItem] など）
         // .count: 配列の中身の個数を返すプロパティ
         // 「ToDoリストのアイテム数ぶん、テーブルビューに行を表示する」という意味
-        return todoListController.todoItems.count
+        return self.todoItems.count
     }
     // セルの生成
     // テーブルビューメソッド　以降指定引数　（どのテーブルビューを対象にするか　セルローアットメソッドでセル生成　インデックスパス）指定型はUITableViewCell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // 定数セル 左辺に代入　テーブルビューのデンキューセルメソッド（セルを再生するメソッド）（対象のセル）,for: どの indexPath（行・セクション）で使うか指定する
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-        // 定数todoItem（初定義）＝　todoListControllerのtodoItems[表示するセル番号に対応する要素を取り出す]　
-        let todoItem = todoListController.todoItems[indexPath.row]
+        // 定数todoItem（初定義）＝　todoListControllerのtodoItems[表示するセル番号に対応する要素を取り出す]
+        let todoItem = self.todoItems[indexPath.row]
         // cell UITableViewCell型のインスタンス（表示する1つのセル）
         // .textLabel セルにはデフォルトでtextLabel（UILabel）がついている
         // ? nilだったらときにクラッシュしないための記述
@@ -179,12 +142,12 @@ extension TodoListViewController: UITableViewDataSource {
         // if　エディッティング　イコール　デリート
         if editingStyle == .delete {
             //リストの削除アイテム（引数ラベル　ユーザーが操作したインデックスナンバー）
-            todoListController.removeItem(at: indexPath.row)
+            self.removeItem(at: indexPath.row)
             // .deleteRows　デリートローズメソッド　アニメーション付きで削除する処理
             // at: [indexPath] (削除したいセルの位置（IndexPath型の配列）→ 複数行でも対応できるように「配列」で渡す必要がある)
             // with: .automatic オートマティック　削除時に使うアニメーションの種類→ .automatic はシステムに任せて最適な動きをしてくれる
             tableView.deleteRows(at: [indexPath], with: .automatic)
-
+            
         }
         
     }
@@ -197,7 +160,7 @@ extension TodoListViewController: UITableViewDelegate {
         //　テーブルビューのディセレクトロウ（インデックスパス　アニメーションあり）
         tableView.deselectRow(at: indexPath, animated: true)
         // トグルメソッド　反転する　（選択するインデックス）
-        todoListController.toggleCompleted(at: indexPath.row)
+        //        todoListController(at: indexPath.row)
         // テーブルビューのリロード　再読み込み
         tableView.reloadData()
     }

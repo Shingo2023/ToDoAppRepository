@@ -51,7 +51,6 @@
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="2HU-lG-1qL">
                                 <rect key="frame" x="16" y="321" width="360" height="532"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -82,9 +81,9 @@
                     </view>
                     <connections>
                         <outlet property="categoryTextField" destination="jtU-co-Te9" id="ZAW-bf-0oc"/>
-                        <outlet property="closeButton" destination="8Oo-Ta-Rb5" id="zUz-QA-ZpK"/>
+                        <outlet property="closeButton" destination="8Oo-Ta-Rb5" id="cb9-No-NKL"/>
                         <outlet property="messageTextView" destination="2HU-lG-1qL" id="WON-qw-889"/>
-                        <outlet property="saveButtonTapped" destination="5BG-fD-gZp" id="tPO-sS-B3G"/>
+                        <outlet property="saveButton" destination="5BG-fD-gZp" id="tPO-sS-B3G"/>
                         <outlet property="titleTextField" destination="hHg-VI-oIl" id="UNR-hf-HBZ"/>
                     </connections>
                 </viewController>

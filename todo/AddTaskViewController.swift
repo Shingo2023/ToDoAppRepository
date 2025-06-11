@@ -7,35 +7,76 @@
 
 import UIKit
 
-//データ保存機能
-// 構造体TodoItemを作成
-// Codable コーダブル 　　変換（エンコードencode）と復元（デコードdecode）できる
-struct TodoItem: Codable {
-    var title: String
-    var completed: Bool
-}
-// 構造体TodoListに変換と復元機能。先ほど定義した構造体TodoItemを格納。
-struct TodoList: Codable {
-    var items: [TodoItem]
-}
-
-let todoKey = "TodoList"
 
 //このファイルのメインクラス
 class AddTaskViewController: UIViewController {
     
-    //閉じるボタン
     @IBOutlet weak var closeButton: UIButton!
+    @IBOutlet weak var saveButton: UIButton!
+    @IBOutlet weak var categoryTextField: UITextField!
+    @IBOutlet weak var titleTextField: UITextField!
+    @IBOutlet weak var messageTextView: UITextView!
+    
+    let categoryOptions = ["緊急&重要", "重要", "不要", "緊急"]
+    var categoryPicker = UIPickerView()
+    
+    var selectedCategoryIndex: Int?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // プレースホルダー（薄文字）
+        categoryTextField.placeholder = "カテゴリ"
+        titleTextField.placeholder = "タイトル"
+        messageTextView.delegate = self
+        messageTextView.text = "メッセージ"
+        messageTextView.textColor = UIColor.lightGray
+        
+        categoryPicker.delegate = self
+        categoryPicker.dataSource = self
+        categoryTextField.inputView = categoryPicker
+        
+        categoryTextField.delegate = self
+        titleTextField.delegate = self
+        messageTextView.delegate = self
+        
+        categoryTextField.layer.borderWidth = 1.0
+        categoryTextField.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        
+        titleTextField.layer.borderWidth = 1.0
+        titleTextField.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        
+        // メッセージTextViewに黒枠を追加
+        // .borderWidth　ボーダーウィズ　線の太さ
+        messageTextView.layer.borderWidth = 1.0
+        // .borderColor ボーダーカラー　線の色　＝　UIkitのUIColor UIの色を決める型
+        // cgColor CGColor型に変換するプロパティ
+        // UIColorはUIKitの色の型。borderColorはCGColor型。だから変換が必要。
+        messageTextView.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        // .cornerRadius コーナーレイディアス　角丸の半径を指定するプロパティ（型は CGFloat）
+        messageTextView.layer.cornerRadius = 5.0
+        
+        // pickerView のツールバー（完了ボタン付き）を作成
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "決定", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.setItems([spacer, doneButton], animated: false)
+        
+        categoryTextField.inputAccessoryView = toolbar
+        
+        // categoryTextFieldに何も初期値を設定しないことで、"緊急&重要"が勝手に選ばれないようにする
+        categoryTextField.text = ""
+        
+    }
+    
     //閉じるボタンの処理
     @IBAction func closeButton(_ sender: UIButton) {
         self.dismiss(animated: true , completion: nil)
     }
     
-    //タスク追加ボタン
-    @IBOutlet weak var saveButtonTapped: UIButton!
     //その保存処理
-    
-    
     @IBAction func saveButtonTapped(_ sender: UIButton) {
         //何かしら文字が埋まっていれば安全なアンラップができる
         guard let title = titleTextField.text, !title.isEmpty else { return }
@@ -65,68 +106,56 @@ class AddTaskViewController: UIViewController {
         if let encoded = try? JSONEncoder().encode(currentList) {
             defaults.set(encoded, forKey: todoKey)
             
+            NotificationCenter.default.post(name: Notification.Name("TaskAdded"), object: nil)
+            
             // ④ 画面を閉じる
             dismiss(animated: true, completion: nil)
+            
+            print("カテゴリーテキストを保存します")
             
             
         }
     }
     
+    @objc func doneTapped() {
+        // nil の場合は0（＝緊急&重要）を代入
+        let selectedIndex = selectedCategoryIndex ?? 0
+        categoryTextField.text = categoryOptions[selectedIndex]
+        selectedCategoryIndex = selectedIndex // 初回確定のためセットしておく
+        categoryTextField.resignFirstResponder()
+    }
     
-    
-    
-    
-    @IBOutlet weak var categoryTextField: UITextField!
-    //保存//文字数制限
-    
-    
-    
-    
-    @IBOutlet weak var titleTextField: UITextField!
-    //保存
-    //文字数制限
-    
-    @IBOutlet weak var messageTextView: UITextView!
-    //保存機能
-    //黒枠
-    //文字数制限
-    
-    //キーボード設定メソッド　上記に適用
-    //戻るボタン
-    //キーボード終うボタン
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // キーボードを閉じる
         textField.resignFirstResponder()
-//        outputText.text = textField.text
+        //        outputText.text = textField.text
         return true
     }
     
+}
+extension AddTaskViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        categoryTextField.delegate = self
-        titleTextField.delegate = self
-        messageTextView.delegate = self
-        
-        categoryTextField.layer.borderWidth = 1.0
-        categoryTextField.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        
-        titleTextField.layer.borderWidth = 1.0
-        titleTextField.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        
-        // メッセージTextViewに黒枠を追加
-        // .borderWidth　ボーダーウィズ　線の太さ
-        messageTextView.layer.borderWidth = 1.0
-        // .borderColor ボーダーカラー　線の色　＝　UIkitのUIColor UIの色を決める型
-        // cgColor CGColor型に変換するプロパティ
-        // UIColorはUIKitの色の型。borderColorはCGColor型。だから変換が必要。
-        messageTextView.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        // .cornerRadius コーナーレイディアス　角丸の半径を指定するプロパティ（型は CGFloat）
-        messageTextView.layer.cornerRadius = 5.0
+    // 列数（基本1列）
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    // 行数
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return categoryOptions.count
+    }
+    
+    // 行に表示する文字列
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return categoryOptions[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedCategoryIndex = row
     }
 }
+
 // UITextFieldDelegateを準拠
 extension AddTaskViewController: UITextFieldDelegate {
     // テキストフィールドメソッド（UITextFieldを対象に…）
@@ -154,12 +183,29 @@ extension AddTaskViewController: UITextFieldDelegate {
         // つまり、マックスレングスのほうが大きいが成立するならtrue
         // <=　比較演算子　結果はBool型になる
         return updatedText.count <= maxLength
+        
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            if textField == categoryTextField {
+                let currentRow = categoryPicker.selectedRow(inComponent: 0)
+                selectedCategoryIndex = currentRow
+            }
+        }
     }
 }
 // UITextViewDelegateを準拠（必要に応じて）
 extension AddTaskViewController: UITextViewDelegate {
     // textViewDidBeginEditing テキストビュー・ディッド・ビギン・エディティング
     func textViewDidBeginEditing(_ textView: UITextView) {
-        // キーボード対策などが必要な場合はここに書く
+        if textView.text == "メッセージ" {
+            textView.text = ""
+            textView.textColor = .black
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "メッセージ"
+            textView.textColor = .lightGray
+        }
     }
 }

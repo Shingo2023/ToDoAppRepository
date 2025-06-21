@@ -9,7 +9,9 @@ import UIKit
 // 構造体TodoItemを作成
 // Codable コーダブル 　　変換（エンコードencode）と復元（デコードdecode）できる
 struct TodoItem: Codable {
+    let category: String
     var title: String
+    var message: String
     var completed: Bool
 }
 // 構造体TodoListに変換と復元機能。先ほど定義した構造体TodoItemを格納。

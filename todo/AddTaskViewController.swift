@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 //このファイルのメインクラス
 class AddTaskViewController: UIViewController {
     
@@ -19,55 +18,58 @@ class AddTaskViewController: UIViewController {
     
     let categoryOptions = ["緊急&重要", "重要", "不要", "緊急"]
     var categoryPicker = UIPickerView()
-    
     var selectedCategoryIndex: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // プレースホルダー（薄文字）
+        // --- プレースホルダーと初期テキスト ---
         categoryTextField.placeholder = "カテゴリ"
         titleTextField.placeholder = "タイトル"
-        messageTextView.delegate = self
         messageTextView.text = "メッセージ"
-        messageTextView.textColor = UIColor.lightGray
+        messageTextView.textColor = .lightGray
+        categoryTextField.text = "" // 自動選択されないよう空文字
         
+        // --- PickerView 設定 ---
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
         categoryTextField.inputView = categoryPicker
         
+        // --- ツールバー作成（Picker用） ---
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "決定", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.setItems([spacer, doneButton], animated: false)
+        categoryTextField.inputAccessoryView = toolbar
+        
+        // --- デリゲート設定 ---
         categoryTextField.delegate = self
         titleTextField.delegate = self
         messageTextView.delegate = self
         
+        // --- 枠線と角丸設定 ---
+        // cgColor CGColor型に変換するプロパティ
+        // UIColorはUIKitの色の型。borderColorはCGColor型。だから変換が必要。
+        // .withAlphaComponent(0.3) → 透過度30%の黒色に変えています（0が完全透明、1が不透明）。
+        let borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        
         categoryTextField.layer.borderWidth = 1.0
-        categoryTextField.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        
+        categoryTextField.layer.borderColor = borderColor
+
         titleTextField.layer.borderWidth = 1.0
-        titleTextField.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        
+        titleTextField.layer.borderColor = borderColor
+
         // メッセージTextViewに黒枠を追加
         // .borderWidth　ボーダーウィズ　線の太さ
         messageTextView.layer.borderWidth = 1.0
         // .borderColor ボーダーカラー　線の色　＝　UIkitのUIColor UIの色を決める型
-        // cgColor CGColor型に変換するプロパティ
-        // UIColorはUIKitの色の型。borderColorはCGColor型。だから変換が必要。
-        messageTextView.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        messageTextView.layer.borderColor = borderColor
         // .cornerRadius コーナーレイディアス　角丸の半径を指定するプロパティ（型は CGFloat）
         messageTextView.layer.cornerRadius = 5.0
         
-        // pickerView のツールバー（完了ボタン付き）を作成
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
+        messageTextView.layer.borderColor = UIColor.black.withAlphaComponent(0.3).cgColor
         
-        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(title: "決定", style: .done, target: self, action: #selector(doneTapped))
-        toolbar.setItems([spacer, doneButton], animated: false)
-        
-        categoryTextField.inputAccessoryView = toolbar
-        
-        // categoryTextFieldに何も初期値を設定しないことで、"緊急&重要"が勝手に選ばれないようにする
-        categoryTextField.text = ""
         
     }
     
@@ -78,45 +80,37 @@ class AddTaskViewController: UIViewController {
     
     //その保存処理
     @IBAction func saveButtonTapped(_ sender: UIButton) {
-        //何かしら文字が埋まっていれば安全なアンラップができる
         guard let title = titleTextField.text, !title.isEmpty else { return }
-        // ① 既存のToDoリストを読み込む
-        // カレントリストを定義：　[元の保存機能構造体] = 空の配列を代入
+        
+        let category = categoryTextField.text ?? "未設定"
+        let message = (messageTextView.text == "メッセージ") ? "" : messageTextView.text ?? ""
+        let newItem = TodoItem(category: category, title: title, message: message, completed: false)
+        
         var currentList: [TodoItem] = []
-        // defaultsを定義　＝　ユーザーデフォルツ　ユーザーの設定やちょっとしたデータを保存・読み込みできます。
+        
         let defaults = UserDefaults.standard
-        // if let nilか確認し、処理を分ける { nilではなく値がある場合 } else { nilの場合 }
-        // savedData = defaultsのdataメソッド（とその保存キー）
-        if let savedData = defaults.data(forKey: todoKey),
-           // 2つ目の if let こちらもnilかチェックしていく
-           // decodedListを定義
-            // try? エラー処理演算子の一つ　オプショナルトライ　エラーが出たら nil を返す演算子
-            // デコードで保存してあるTodoItemを読み込んでいる。保存処理の第１工程
-            let decodedList = try? JSONDecoder().decode([TodoItem].self, from: savedData) {
-            // カレントリスト　＝　デコードリスト デコードされた時に成立する
-            currentList = decodedList
+        if let savedData = defaults.data(forKey: "TodoList"),
+           let savedList = try? JSONDecoder().decode(TodoList.self, from: savedData) {
+            currentList = savedList.items
         }
-        // ② 新しいアイテムを追加
-        // ニューアイテム = トゥドゥアイテム（falseの時は）
-        let newItem = TodoItem(title: title, completed: false)
-        // カレントリストにnewItemを追加
+        
+        // ✅ newItemを追加
         currentList.append(newItem)
         
-        // ③ リストを再度保存（エンコード）
-        if let encoded = try? JSONEncoder().encode(currentList) {
-            defaults.set(encoded, forKey: todoKey)
-            
+        // ✅ TodoList構造体にラップ
+        let updatedList = TodoList(items: currentList)
+        
+        do {
+            let encoded = try JSONEncoder().encode(updatedList)
+            defaults.set(encoded, forKey: "TodoList")
             NotificationCenter.default.post(name: Notification.Name("TaskAdded"), object: nil)
-            
-            // ④ 画面を閉じる
             dismiss(animated: true, completion: nil)
-            
-            print("カテゴリーテキストを保存します")
-            
-            
+            print("✅ 保存成功: \(newItem.title), カテゴリ: \(newItem.category)")
+        } catch {
+            print("❌ エンコード失敗: \(error)")
         }
     }
-    
+        
     @objc func doneTapped() {
         // nil の場合は0（＝緊急&重要）を代入
         let selectedIndex = selectedCategoryIndex ?? 0
@@ -152,6 +146,7 @@ extension AddTaskViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // 何もしない（即時確定させたくないから）
         selectedCategoryIndex = row
     }
 }

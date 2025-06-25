@@ -68,6 +68,11 @@ class TodoListViewController: UIViewController {
         updateCategoryCountLabels()
         
     }
+    @IBAction func debugButtonTapped(_ sender: Any) {
+        let vc = CellDebugViewController(nibName: "CellDebugViewController", bundle: nil)
+        present(vc, animated: true)
+    }
+
     
     @IBAction func showAddTask(_ sender: UIButton) {
         // 定数ストーリーボードの型は　UIStoryboard（型）　Storyboard型とは画面を生成する、画面の中から特定のViewControllerを取り出すなど”Storyboardファイルを操作するクラス”である
@@ -171,8 +176,8 @@ class TodoListViewController: UIViewController {
     }
     
     func showCategoryTaskList(for category: String) {
-        let storyboard = UIStoryboard(name: "CategoryTaskList", bundle: nil)  // ← 分けた.storyboard名に変更
-        if let vc = storyboard.instantiateViewController(withIdentifier: "CategoryTaskListViewController") as? CategoryTaskListViewController {
+        let storyboard = UIStoryboard(name: "CategoryTaskListViewController", bundle: nil)  // ← 分けた.storyboard名に変更
+        if let vc = storyboard.instantiateViewController(withIdentifier: "CategoryTaskList") as? CategoryTaskListViewController {
             vc.selectedCategory = category
             self.present(vc, animated: true)
         }

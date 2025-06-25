@@ -34,7 +34,7 @@ class CategoryTaskListViewController: UIViewController, UITableViewDelegate, UIT
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryTaskCell", for: indexPath)
         let item = filteredItems[indexPath.row]
         cell.textLabel?.text = item.title
         cell.detailTextLabel?.text = item.message

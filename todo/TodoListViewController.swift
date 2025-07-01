@@ -68,10 +68,6 @@ class TodoListViewController: UIViewController {
         updateCategoryCountLabels()
         
     }
-    @IBAction func debugButtonTapped(_ sender: Any) {
-        let vc = CellDebugViewController(nibName: "CellDebugViewController", bundle: nil)
-        present(vc, animated: true)
-    }
 
     
     @IBAction func showAddTask(_ sender: UIButton) {

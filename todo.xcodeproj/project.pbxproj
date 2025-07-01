@@ -17,8 +17,6 @@
 		FA4B8A542DBA1EFF00868689 /* TodoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4B8A4A2DBA1EFF00868689 /* TodoListViewController.swift */; };
 		FA67CF0E2DFEED0F00D29CCA /* TodoItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA67CF0D2DFEED0F00D29CCA /* TodoItemCell.swift */; };
 		FA7141272DBC667C00E754A0 /* AddTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7141262DBC667C00E754A0 /* AddTaskViewController.swift */; };
-		FA85C7852E0993C1003E0D96 /* CellDebugViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FA85C7842E0993C1003E0D96 /* CellDebugViewController.xib */; };
-		FA85C7862E0993C1003E0D96 /* CellDebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA85C7832E0993C1003E0D96 /* CellDebugViewController.swift */; };
 		FA940BB02E04606200180EBB /* CategoryTaskListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA940BAF2E04606200180EBB /* CategoryTaskListViewController.swift */; };
 		FA940BB22E04608C00180EBB /* CategoryTaskListViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA940BB12E04608C00180EBB /* CategoryTaskListViewController.storyboard */; };
 		FAF5D4BC2DF6A3B700B7A78A /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF5D4BB2DF6A38500B7A78A /* Model.swift */; };
@@ -37,8 +35,6 @@
 		FA4B8A4A2DBA1EFF00868689 /* TodoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListViewController.swift; sourceTree = "<group>"; };
 		FA67CF0D2DFEED0F00D29CCA /* TodoItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemCell.swift; sourceTree = "<group>"; };
 		FA7141262DBC667C00E754A0 /* AddTaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskViewController.swift; sourceTree = "<group>"; };
-		FA85C7832E0993C1003E0D96 /* CellDebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellDebugViewController.swift; sourceTree = "<group>"; };
-		FA85C7842E0993C1003E0D96 /* CellDebugViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CellDebugViewController.xib; sourceTree = "<group>"; };
 		FA940BAF2E04606200180EBB /* CategoryTaskListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTaskListViewController.swift; sourceTree = "<group>"; };
 		FA940BB12E04608C00180EBB /* CategoryTaskListViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CategoryTaskListViewController.storyboard; sourceTree = "<group>"; };
 		FAF5D4BB2DF6A38500B7A78A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -82,8 +78,6 @@
 				FA4B8A492DBA1EFF00868689 /* SceneDelegate.swift */,
 				FAF5D4BB2DF6A38500B7A78A /* Model.swift */,
 				FA4B8A482DBA1EFF00868689 /* Main.storyboard */,
-				FA85C7842E0993C1003E0D96 /* CellDebugViewController.xib */,
-				FA85C7832E0993C1003E0D96 /* CellDebugViewController.swift */,
 				FA4B8A4A2DBA1EFF00868689 /* TodoListViewController.swift */,
 				FA67CF0D2DFEED0F00D29CCA /* TodoItemCell.swift */,
 				FA4B8A402DBA1EFF00868689 /* AddTask.storyboard */,
@@ -160,7 +154,6 @@
 				FA4B8A4D2DBA1EFF00868689 /* Assets.xcassets in Resources */,
 				FA4B8A4E2DBA1EFF00868689 /* File.txt in Resources */,
 				FA4B8A502DBA1EFF00868689 /* LaunchScreen.storyboard in Resources */,
-				FA85C7852E0993C1003E0D96 /* CellDebugViewController.xib in Resources */,
 				FA4B8A512DBA1EFF00868689 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -178,7 +171,6 @@
 				FA940BB02E04606200180EBB /* CategoryTaskListViewController.swift in Sources */,
 				FA4B8A532DBA1EFF00868689 /* SceneDelegate.swift in Sources */,
 				FA67CF0E2DFEED0F00D29CCA /* TodoItemCell.swift in Sources */,
-				FA85C7862E0993C1003E0D96 /* CellDebugViewController.swift in Sources */,
 				FA4B8A542DBA1EFF00868689 /* TodoListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
